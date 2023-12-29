@@ -57,6 +57,6 @@ def capture_area():
     return screenshot
 
 # Приклад використання
-screenshot = capture_area()
+#screenshot = capture_area()
 
-screenshot.show()
+#screenshot.show()
