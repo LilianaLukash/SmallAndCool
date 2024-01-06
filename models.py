@@ -1,5 +1,8 @@
+import threading
 import tkinter as tk
 from PIL import ImageGrab
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = r'D:\Tesseract-OCR\tesseract.exe'
 
 class CaptureScreen:
     def __init__(self, root):
@@ -44,7 +47,13 @@ class CaptureScreen:
         self.end_x, self.end_y = (event.x, event.y)
         self.root.quit()
 
+def image_to_text(image):
+    text = pytesseract.image_to_string(image)
+    return text
+
 def capture_area():
+    print("capture_area")
+    global screenshot
     root = tk.Tk()
     capture_screen = CaptureScreen(root)
     root.mainloop()
@@ -54,9 +63,18 @@ def capture_area():
 
     # Захоплення скріншоту обраної області
     screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
-    return screenshot
 
-# Приклад використання
-#screenshot = capture_area()
+    # Обробка скріншоту
+    if screenshot:
+        text = image_to_text(screenshot)
+        print(text)
+        return text
 
-#screenshot.show()
+
+
+def on_hotkey_press():
+    print("on_hotkey_press")
+    thread = threading.Thread(target=capture_area)
+    thread.start()
+    thread.join()
+    
