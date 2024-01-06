@@ -3,6 +3,8 @@ import tkinter as tk
 from PIL import ImageGrab
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'D:\Tesseract-OCR\tesseract.exe'
+import keyboard
+from time import sleep
 
 class CaptureScreen:
     def __init__(self, root):
@@ -55,6 +57,7 @@ def capture_area():
     print("capture_area")
     global screenshot
     root = tk.Tk()
+    root.focus_force()
     capture_screen = CaptureScreen(root)
     root.mainloop()
 
@@ -63,6 +66,7 @@ def capture_area():
 
     # Захоплення скріншоту обраної області
     screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
+    screenshot.show()
 
     # Обробка скріншоту
     if screenshot:
@@ -71,10 +75,28 @@ def capture_area():
         return text
 
 
-
 def on_hotkey_press():
     print("on_hotkey_press")
     thread = threading.Thread(target=capture_area)
     thread.start()
     thread.join()
-    
+
+# capture_area()
+
+def main():
+   
+
+    while True:
+            
+        # Перевірка натискання Ctrl+Shift+A
+        if keyboard.is_pressed('ctrl+shift+A'):
+            on_hotkey_press()
+            sleep(0.5)  # Затримка для запобігання миттєвому повторному захопленню
+
+        # Перевірка натискання Esc
+        if keyboard.is_pressed('esc'):
+            print("Завершення програми.")
+            break
+
+if __name__ == "__main__":
+    main()
