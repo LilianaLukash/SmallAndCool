@@ -71,8 +71,10 @@ def capture_area():
     # Обробка скріншоту
     if screenshot:
         text = image_to_text(screenshot)
-        print(text)
-        return text
+        text_clean = "розпізнай запитання та дай на нього коротку відповідь мовою запитання. якщо є варіанти відповідей почни з вказування правильного варіанту."
+        text_clean = text_clean + " ".join(text.split())
+        print(text_clean)
+        return text_clean
 
 
 def on_hotkey_press():
