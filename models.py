@@ -6,13 +6,20 @@ pytesseract.pytesseract.tesseract_cmd = r'D:\Tesseract-OCR\tesseract.exe'
 import keyboard
 from time import sleep
 
+import tkinter as tk
+from PIL import ImageGrab
+import threading
+import keyboard
+import pytesseract
+
 class CaptureScreen:
-    def __init__(self, root):
+    def __init__(self, root, scale):
         self.root = root
         self.begin_x = None
         self.begin_y = None
         self.end_x = None
         self.end_y = None
+        self.scale = scale
 
         self.selection = None
         self.start_point = None
@@ -30,23 +37,22 @@ class CaptureScreen:
 
     def on_button_press(self, event):
         self.start_point = event
-        self.begin_x = event.x
-        self.begin_y = event.y
+        self.begin_x = int(event.x )
+        self.begin_y = int(event.y )
 
         if not self.rect:
             self.rect = self.canvas.create_rectangle(self.begin_x, self.begin_y, self.begin_x, self.begin_y, outline='red')
 
     def on_move_press(self, event):
-        curX, curY = (event.x, event.y)
+        curX, curY = int(event.x ), int(event.y )
 
         if self.rect:
             self.canvas.coords(self.rect, self.begin_x, self.begin_y, curX, curY)
 
-
-
     def on_button_release(self, event):
         print("Відпускання кнопки")
-        self.end_x, self.end_y = (event.x, event.y)
+        self.end_x = int(event.x )
+        self.end_y = int(event.y )
         self.root.quit()
 
 def image_to_text(image):
@@ -56,26 +62,26 @@ def image_to_text(image):
 def capture_area():
     print("capture_area")
     global screenshot
+    scale = 1.5  # Default scale
     root = tk.Tk()
     root.focus_force()
-    capture_screen = CaptureScreen(root)
+    capture_screen = CaptureScreen(root, scale)
     root.mainloop()
 
-    # Координати виділеної області
-    x1, y1, x2, y2 = capture_screen.begin_x, capture_screen.begin_y, capture_screen.end_x, capture_screen.end_y
+    # Calculate coordinates based on the screen scale
+    x1, y1, x2, y2 = capture_screen.begin_x * scale, capture_screen.begin_y * scale, capture_screen.end_x * scale, capture_screen.end_y * scale
 
-    # Захоплення скріншоту обраної області
+    # Capture the screen area
     screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
     screenshot.show()
 
-    # Обробка скріншоту
+    # Process the screenshot
     if screenshot:
         text = image_to_text(screenshot)
         text_clean = "розпізнай запитання та дай на нього коротку відповідь мовою запитання. якщо є варіанти відповідей почни з вказування правильного варіанту."
         text_clean = text_clean + " ".join(text.split())
         print(text_clean)
         return text_clean
-
 
 def on_hotkey_press():
     print("on_hotkey_press")
