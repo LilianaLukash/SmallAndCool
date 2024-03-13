@@ -11,6 +11,7 @@ from PIL import ImageGrab
 import threading
 import keyboard
 import pytesseract
+from openai import OpenAI
 
 class CaptureScreen:
     def __init__(self, root, scale):
@@ -81,7 +82,17 @@ def capture_area():
         text_clean = "розпізнай запитання та дай на нього коротку відповідь мовою запитання. якщо є варіанти відповідей почни з вказування правильного варіанту."
         text_clean = text_clean + " ".join(text.split())
         print(text_clean)
-        return text_clean
+        client = OpenAI()
+        completion = client.chat.completions.create(
+        model="gpt-3.5-turbo-1106",
+        messages=[
+        {"role": "system", "content": "You are a teacher who are helping to make homework."},
+        {"role": "user", "content": text_clean}
+        ] )
+
+        print(completion.choices[0].message)
+
+        return completion.choices[0].message
 
 def on_hotkey_press():
     print("on_hotkey_press")
