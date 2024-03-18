@@ -5,13 +5,9 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'D:\Tesseract-OCR\tesseract.exe'
 import keyboard
 from time import sleep
-
-import tkinter as tk
-from PIL import ImageGrab
 import threading
-import keyboard
-import pytesseract
 from openai import OpenAI
+from tkinter import messagebox
 
 class CaptureScreen:
     def __init__(self, root, scale):
@@ -74,7 +70,7 @@ def capture_area():
 
     # Capture the screen area
     screenshot = ImageGrab.grab(bbox=(x1, y1, x2, y2))
-    screenshot.show()
+    #screenshot.show()
 
     # Process the screenshot
     if screenshot:
@@ -91,6 +87,11 @@ def capture_area():
         ] )
 
         print(completion.choices[0].message)
+        root = tk.Tk()
+        root.withdraw()  # Це запобігає відображенню порожнього вікна Tkinter
+        tk.messagebox.showinfo("Відповідь", completion.choices[0].message)  
+             
+        root.destroy()
 
         return completion.choices[0].message
 
